@@ -125,4 +125,4 @@ The HTML template shows:
 
 ## License
 
-MIT
+[MIT](LICENSE.md) - Mathieu Ledru 2026
