@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkwood\IaExceptionBundle\DependencyInjection;
 
 use Darkwood\IaExceptionBundle\Service\ExceptionAiAnalyzer;
+use Darkwood\IaExceptionBundle\Service\TraceFormatter;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -35,5 +36,10 @@ final class DarkwoodIaExceptionExtension extends Extension
         $analyzerDef = $container->getDefinition(ExceptionAiAnalyzer::class);
         $analyzerDef->setArgument('$agent', new Reference($config['agent']));
         $analyzerDef->setArgument('$cache', new Reference($config['cache']));
+
+        if ($container->has('debug.file_link_formatter')) {
+            $container->getDefinition(TraceFormatter::class)
+                ->setArgument('$fileLinkFormat', new Reference('debug.file_link_formatter'));
+        }
     }
 }

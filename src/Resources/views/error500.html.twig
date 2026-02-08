@@ -37,6 +37,9 @@
         <div class="exception-message-wrapper">
             <div class="container">
                 <h1 class="break-long-words exception-message{% if exception_message|length > 180 %} long{% endif %}">{{ exception_message }}</h1>
+                <div class="exception-illustration hidden-xs-down">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="rgba(255,255,255,0.8)" width="111" height="66" viewBox="0 0 16 16"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
+                </div>
             </div>
         </div>
     </div>
@@ -70,16 +73,30 @@
             </div>
 
             <div class="tab">
-                <h3 class="tab-title">Exception</h3>
+                <h3 class="tab-title">Exception{% if exceptions|length > 1 %} <span class="badge">{{ exceptions|length }}</span>{% endif %}</h3>
                 <div class="tab-content">
-                    <div class="trace trace-as-html" id="trace-box-1">
+                    {% for exIndex, exception in exceptions %}
+                    <div class="trace trace-as-html" id="trace-box-{{ exIndex + 1 }}">
                         <div class="trace-details">
                             <div class="trace-head">
-                                <h3 class="trace-class">{{ exception_class }}</h3>
-                                <p class="break-long-words trace-message">{{ exception_message }}</p>
+                                <h3 class="trace-class">{{ exception.class }}</h3>
+                                {% if exception.message %}
+                                <p class="break-long-words trace-message">{{ exception.message }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="sf-toggle-content">
+                                {% for i, frame in exception.trace %}
+                                {% include '@DarkwoodIaException/_trace_line.html.twig' with {
+                                    frame: frame,
+                                    prefix: exIndex + 1,
+                                    i: i
+                                } only %}
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
+                    {% if not loop.last %}<div class="trace-separator"></div>{% endif %}
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -88,9 +105,10 @@
     <script>
     (function() {
         "use strict";
-        var hasClass = function(el, cssClass) { return el.classList.contains(cssClass); };
-        var addClass = function(el, cssClass) { el.classList.add(cssClass); };
-        var removeClass = function(el, cssClass) { el.classList.remove(cssClass); };
+        var hasClass = function(el, c) { return el.classList.contains(c); };
+        var addClass = function(el, c) { el.classList.add(c); };
+        var removeClass = function(el, c) { el.classList.remove(c); };
+        var toggleClass = function(el, c) { el.classList.toggle(c); };
         var tabGroups = document.querySelectorAll('.sf-tabs[data-processed="false"]');
         for (var i = 0; i < tabGroups.length; i++) {
             var tabs = tabGroups[i].querySelectorAll(':scope > .tab');
@@ -119,20 +137,16 @@
             for (var j = 0; j < controls.length; j++) {
                 var tabId = controls[j].getAttribute('data-tab-id');
                 var panel = document.getElementById(tabId);
-                panel.querySelector('.tab-title').className = 'hidden';
-                if (hasClass(controls[j], 'active')) {
-                    panel.className = 'block';
-                } else {
-                    panel.className = 'hidden';
-                }
+                var titleEl = panel.querySelector('.tab-title');
+                if (titleEl) titleEl.className = 'hidden';
+                if (hasClass(controls[j], 'active')) panel.className = 'block'; else panel.className = 'hidden';
                 controls[j].addEventListener('click', function(e) {
                     var activeTab = e.target;
                     while (activeTab && activeTab.tagName.toLowerCase() !== 'button') activeTab = activeTab.parentNode;
                     if (!activeTab) return;
                     var nav = activeTab.parentNode.children;
                     for (var k = 0; k < nav.length; k++) {
-                        var id = nav[k].getAttribute('data-tab-id');
-                        document.getElementById(id).className = 'hidden';
+                        document.getElementById(nav[k].getAttribute('data-tab-id')).className = 'hidden';
                         removeClass(nav[k], 'active');
                     }
                     addClass(activeTab, 'active');
@@ -140,6 +154,34 @@
                 });
             }
             tabGroups[i].setAttribute('data-processed', 'true');
+        }
+        var toggles = document.querySelectorAll('.sf-toggle:not([data-processed=true])');
+        for (i = 0; i < toggles.length; i++) {
+            var sel = toggles[i].getAttribute('data-toggle-selector');
+            var el = document.querySelector(sel);
+            if (!el) continue;
+            addClass(el, 'sf-toggle-content');
+            if (toggles[i].getAttribute('data-toggle-initial') === 'display') {
+                addClass(toggles[i], 'sf-toggle-on');
+                addClass(el, 'sf-toggle-visible');
+            } else {
+                addClass(toggles[i], 'sf-toggle-off');
+                addClass(el, 'sf-toggle-hidden');
+            }
+            toggles[i].addEventListener('click', function(ev) {
+                var t = ev.currentTarget;
+                if (ev.target.closest && ev.target.closest('a') !== null) return;
+                if (window.getSelection && window.getSelection().toString() !== '') return;
+                ev.preventDefault();
+                var elem = document.querySelector(t.getAttribute('data-toggle-selector'));
+                if (elem) {
+                    toggleClass(t, 'sf-toggle-on');
+                    toggleClass(t, 'sf-toggle-off');
+                    toggleClass(elem, 'sf-toggle-hidden');
+                    toggleClass(elem, 'sf-toggle-visible');
+                }
+            });
+            toggles[i].setAttribute('data-processed', 'true');
         }
     })();
     </script>

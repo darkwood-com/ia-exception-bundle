@@ -1,0 +1,30 @@
+{# Renders a single trace line in Symfony style #}
+<div class="trace-line {{ frame.is_vendor ? 'trace-from-vendor' : '' }}">
+    <div class="trace-line-header break-long-words {{ frame.file ? 'sf-toggle' : '' }}" data-toggle-selector="#trace-html-{{ prefix }}-{{ i }}" data-toggle-initial="{{ frame.style == 'expanded' ? 'display' : '' }}">
+        {% if frame.file %}
+        <span class="icon icon-close"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 1792 1792"><path fill="currentColor" d="M1408 960V832q0-26-19-45t-45-19H448q-26 0-45 19t-19 45v128q0 26 19 45t45 19h896q26 0 45-19t19-45zm256-544v960q0 119-84.5 203.5T1376 1664H416q-119 0-203.5-84.5T128 1376V416q0-119 84.5-203.5T416 128h960q119 0 203.5 84.5T1664 416z"/></svg></span>
+        <span class="icon icon-open"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 1792 1792"><path fill="currentColor" d="M1408 960V832q0-26-19-45t-45-19h-320V448q0-26-19-45t-45-19H832q-26 0-45 19t-19 45v320H448q-26 0-45 19t-19 45v128q0 26 19 45t45 19h320v320q0 26 19 45t45 19h128q26 0 45-19t19-45v-320h320q26 0 45-19t19-45z"/></svg></span>
+        {% endif %}
+
+        {% if frame.method_call %}
+        <span class="trace-class">{{ frame.method_call }}</span>
+        {% endif %}
+
+        {% if frame.file %}
+        <span class="block trace-file-path">
+            in
+            {% if frame.file_link %}
+            <a href="{{ frame.file_link }}" title="Click to open this file" class="file_link">{{ frame.file|e }}</a>
+            {% else %}
+            <span>{{ frame.file|e }}</span>
+            {% endif %}
+            {% if frame.line %}(line {{ frame.line }}){% endif %}
+        </span>
+        {% endif %}
+    </div>
+    {% if frame.file and frame.code_excerpt %}
+    <div id="trace-html-{{ prefix }}-{{ i }}" class="trace-code sf-toggle-content">
+        {{ frame.code_excerpt|raw }}
+    </div>
+    {% endif %}
+</div>

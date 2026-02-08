@@ -6,6 +6,8 @@ namespace Darkwood\IaExceptionBundle\EventSubscriber;
 
 use Darkwood\IaExceptionBundle\Model\ExceptionAiAnalysis;
 use Darkwood\IaExceptionBundle\Service\ExceptionAiAnalyzer;
+use Darkwood\IaExceptionBundle\Service\TraceFormatter;
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +24,7 @@ final class IaExceptionSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly ExceptionAiAnalyzer $analyzer,
+        private readonly TraceFormatter $traceFormatter,
         private readonly Environment $twig,
         private readonly bool $enabled,
         /** @var list<int> */
@@ -142,11 +145,15 @@ final class IaExceptionSubscriber implements EventSubscriberInterface
         int $statusCode,
         \Throwable $throwable
     ): Response {
+        $flatten = FlattenException::createFromThrowable($throwable);
+        $exceptions = $this->traceFormatter->format($flatten);
+
         $content = $this->twig->render('@DarkwoodIaException/error500.html.twig', [
             'error_id' => $errorId,
             'analysis' => $analysis,
             'exception_class' => $throwable::class,
             'exception_message' => $throwable->getMessage(),
+            'exceptions' => $exceptions,
             'status_code' => $statusCode,
             'status_text' => $this->getStatusText($statusCode),
         ]);

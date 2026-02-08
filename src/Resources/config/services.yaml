@@ -3,6 +3,10 @@ services:
         autowire: true
         autoconfigure: true
 
+    Darkwood\IaExceptionBundle\Service\TraceFormatter:
+        arguments:
+            $fileLinkFormat: null
+
     Darkwood\IaExceptionBundle\Service\ExceptionAiAnalyzer:
         arguments:
             $cacheTtl: '%darkwood_ia_exception.cache_ttl%'
