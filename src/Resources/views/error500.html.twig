@@ -1,124 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error {{ status_code }} — AI Analysis</title>
-    <style>
-        :root {
-            --bg: #1a1a2e;
-            --surface: #16213e;
-            --accent: #0f3460;
-            --text: #eaeaea;
-            --muted: #a0a0a0;
-            --success: #4ade80;
-            --warning: #fbbf24;
-        }
-        * { box-sizing: border-box; }
-        body {
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
-            background: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 2rem;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 720px;
-            margin: 0 auto;
-        }
-        h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--warning);
-            margin: 0 0 0.5rem;
-        }
-        .error-id {
-            font-size: 0.75rem;
-            color: var(--muted);
-            margin-bottom: 1.5rem;
-        }
-        .section {
-            background: var(--surface);
-            border: 1px solid var(--accent);
-            border-radius: 6px;
-            padding: 1rem 1.25rem;
-            margin-bottom: 1rem;
-        }
-        .section-title {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--muted);
-            margin-bottom: 0.5rem;
-        }
-        .english-exception {
-            font-size: 0.95rem;
-        }
-        ul {
-            margin: 0.25rem 0 0;
-            padding-left: 1.25rem;
-        }
-        li {
-            margin-bottom: 0.25rem;
-        }
-        .confidence {
-            display: inline-block;
-            padding: 0.15rem 0.5rem;
-            background: var(--accent);
-            border-radius: 4px;
-            font-size: 0.8rem;
-        }
-        .disclaimer {
-            font-size: 0.75rem;
-            color: var(--muted);
-            margin-top: 1.5rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--accent);
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ exception_message|slice(0, 50) }}{% if exception_message|length > 50 %}...{% endif %} ({{ status_code }} {{ status_text }})</title>
+    <style>{{ include('@DarkwoodIaException/exception.css.twig')|raw }}</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Error {{ status_code }}</h1>
-        <p class="error-id">Error ID: {{ error_id }}</p>
+    <script>
+        document.body.classList.add(
+            localStorage.getItem('symfony/profiler/theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'theme-dark' : 'theme-light')
+        );
+    </script>
 
-        <div class="section">
-            <div class="section-title">AI Analysis (hypotheses, not guarantees)</div>
-            <div class="english-exception">{{ analysis.englishException }}</div>
-            <span class="confidence">Confidence: {{ (analysis.confidence * 100)|round }}%</span>
+    <header>
+        <div class="container">
+            <h1 class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 10240 10240"><g fill="#000000"><path d="M0 5120 l0-5120 5120 0 5120 0 0 5120 0 5120-5120 0-5120 0 0-5120z m4540 3503 c333-66 447-141 603-398 53-87 141-258 187-360 71-158 166-356 263-545 61-118 118-230 126-247 13-29 20-33 53-33 24 0 38 5 38 13 0 6 5 102 10 212 27 543 105 855 262 1052 50 64 142 139 212 175 52 26 218 68 271 68 60 0 260-52 325-85 365-183 743-574 1030-1065 24-41 55-95 70-120 56-96 181-353 253-520 174-407 301-883 349-1305 7-60 12-209 13-330 0-208-2-226-28-338-47-194-119-314-237-392-83-55-137-77-242-99-130-27-289-18-463 25-115 29-147 53-191 144-53 112-51 145 14 277 108 220 142 381 142 674 0 281-30 594-81 863-56 290-198 670-346 926-80 137-124 197-206 283-71 73-85 82-116 82-35 0-37-1-49-52-28-117-44-317-46-563-3-568 21-996 84-1537 37-312 38-336 20-413-35-146-105-239-223-294-96-45-178-57-282-42-128 19-222 46-258 74-29 22-72 93-175 287-18 36-61 115-93 177-96 180-243 468-486 950 l-228 453-36 0-36 0-12-122 c-17-179-59-537-76-658-8-58-18-132-21-166 l-7-60 89-71 c119-96 364-345 457-464 259-335 390-621 476-1036 85-413 17-867-181-1212-62-107-190-273-266-343-77-71-227-183-322-240-441-265-1072-382-1744-323-188 17-288 32-481 75-373 83-648 189-965 370-210 120-403 283-515 438-96 131-153 278-174 445-19 159 51 406 135 475 63 52 205 68 280 31 34-16 61-44 120-125 163-224 345-414 396-414 43 0 62-112-187 1140-207 1041-235 1193-242 1335-11 193 47 358 170 492 92 100 251 174 447 209 112 19 404 14 583-11 246-34 570-112 825-200 133-45 202-56 202-32 0 6 9 82 20 167 51 406 80 890 80 1344 0 338-8 482-37 641-8 50-15 103-14 120 2 37 39 92 107 161 81 81 117 85 354 37z"/><path d="M2930 5541 l-75-6 2-90 c2-125 37-319 242-1350 227-1140 208-1026 186-1116-20-79-49-154-65-164-6-3-10-21-10-39 0-41 3-42 165-57 150-14 434-7 585 16 279 41 545 168 721 344 228 229 309 460 296 851-9 263-44 420-139 623-50 104-52 107-84 107-31 0-34-3-44-42-35-136-73-224-136-318-36-54-63-80-123-120-104-69-160-85-296-85-87 1-142 8-263 35-190 41-214 56-268 165-51 103-50 140 9 265 79 166 151 377 222 645 35 129 43 199 26 209-5 3-59 22-120 41-144 45-306 72-506 85-165 10-198 10-325 1z"/></g><g fill="#ffffff"><path d="M4266 8682 c-48-12-67-24-110-66-85-86-108-126-109-193-1-32 6-98 15-148 28-145 33-239 33-625 0-317-6-532-20-700-2-25-6-88-10-140-3-52-8-111-10-130-2-19-7-64-10-100-7-77-9-95-31-270-9-74-17-136-19-138-1-1-63 18-136 43-259 89-588 168-826 200-611 80-978-10-1156-284-55-85-64-106-88-209-48-209-47-221 226-1592 178-896 205-1034 205-1053 0-4-21 9-47 30-60 50-209 222-306 355-62 85-87 111-123 128-57 28-122 31-225 12-74-13-86-19-123-56-46-46-75-109-106-235-30-120-33-226-10-345 25-126 34-154 81-248 142-285 450-533 919-741 443-195 963-300 1495-300 324 0 556 29 854 104 292 74 522 182 749 352 133 99 202 166 292 283 176 226 267 438 326 757 22 115 26 385 9 532-53 450-209 823-503 1205-85 110-343 372-455 462-71 57-87 75-83 92 2 12 10 59 16 106 6 47 13 96 15 110 7 48 24 186 30 245 3 33 8 71 10 85 2 14 7 57 10 95 4 39 8 81 10 95 2 14 7 62 10 108 4 45 10 82 14 82 3 0 109-204 234-453 243-482 390-770 486-950 32-62 75-141 93-177 102-193 146-265 175-287 35-27 94-45 228-69 111-20 180-20 269 1 182 43 287 152 330 346 17 76 17 131-3 289-10 75-14 111-26 225-4 33-8 71-10 85-2 14-7 57-10 95-5 64-10 110-20 205-2 19-7 76-10 125-3 50-8 115-10 145-7 95-20 568-20 740 0 256 22 510 50 591 8 21 11 40 8 43-4 3-2 6 4 6 17 0 168-162 209-225 266-400 455-967 489-1465 4-47 8-96 11-109 3-14 7-128 9-255 6-336-20-475-134-709-28-56-54-118-59-139-21-78 49-259 116-303 36-23 151-56 242-70 25-4 59-9 75-12 66-10 244-4 320 12 109 23 161 44 245 100 118 78 190 198 237 392 27 113 28 129 28 358 0 132-4 276-8 320-43 436-172 929-354 1355-72 167-197 424-253 520-15 25-46 79-70 120-287 491-665 882-1030 1065-79 40-267 85-355 85-80 0-238-36-301-68-70-36-162-111-212-175-130-162-196-377-246-794-9-73-22-297-25-435-1-56-11-61-32-15-8 17-65 129-126 247-97 189-192 387-263 545-88 198-210 410-296 516-115 143-275 211-632 268-95 15-114 15-166 3z m-981-3177 c99-7 119-9 248-31 88-15 305-78 320-93 25-25-148-574-245-781-59-125-68-173-48-246 22-83 69-163 112-194 28-20 73-34 185-58 260-54 326-59 446-30 89 21 97 24 189 85 103 69 179 193 234 381 13 47 26 87 28 89 7 7 106-217 129-292 79-254 84-638 11-845-55-157-118-255-243-381-178-178-443-304-726-345-178-25-556-24-661 2-22 6-23 8-11 23 35 42 77 189 77 267 0 62-13 130-215 1139-175 877-224 1144-228 1247 l-2 63 60 3 c33 1 67 4 75 6 18 3 141-1 265-9z"/></g></svg>
+                Darkwood IA exception
+            </h1>
         </div>
+    </header>
 
-        {% if analysis.probableCauses is not empty %}
-        <div class="section">
-            <div class="section-title">Probable causes</div>
-            <ul>
-                {% for cause in analysis.probableCauses %}
-                <li>{{ cause }}</li>
-                {% endfor %}
-            </ul>
+    <div class="exception-summary">
+        <div class="exception-metadata">
+            <div class="container">
+                <h2 class="exception-hierarchy">
+                    <a href="#trace-box-1">{{ exception_class }}</a>
+                </h2>
+                <h2 class="exception-http">
+                    HTTP {{ status_code }} <small>{{ status_text }}</small>
+                </h2>
+            </div>
         </div>
-        {% endif %}
-
-        {% if analysis.suggestedFixes is not empty %}
-        <div class="section">
-            <div class="section-title">Suggested next steps</div>
-            <ul>
-                {% for fix in analysis.suggestedFixes %}
-                <li>{{ fix }}</li>
-                {% endfor %}
-            </ul>
+        <div class="exception-message-wrapper">
+            <div class="container">
+                <h1 class="break-long-words exception-message{% if exception_message|length > 180 %} long{% endif %}">{{ exception_message }}</h1>
+            </div>
         </div>
-        {% endif %}
-
-        <div class="section">
-            <div class="section-title">Exception</div>
-            <code>{{ exception_class }}</code>: {{ exception_message }}
-        </div>
-
-        <p class="disclaimer">
-            Results are AI-generated hypotheses. Verify before acting. Never include secrets in exception context.
-        </p>
     </div>
+
+    <div class="container">
+        <div class="sf-tabs" data-processed="false">
+            <div class="tab active">
+                <h3 class="tab-title">AI Analysis <span class="badge">Confidence: {{ (analysis.confidence * 100)|round }}%</span></h3>
+                <div class="tab-content">
+                    <div class="ai-analysis-section">
+                        <p class="break-long-words"><strong>{{ analysis.englishException }}</strong></p>
+                        {% if analysis.probableCauses is not empty %}
+                        <p><strong>Probable causes:</strong></p>
+                        <ul>
+                            {% for cause in analysis.probableCauses %}
+                            <li>{{ cause }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        {% if analysis.suggestedFixes is not empty %}
+                        <p><strong>Suggested next steps:</strong></p>
+                        <ul>
+                            {% for fix in analysis.suggestedFixes %}
+                            <li>{{ fix }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        <p class="ai-disclaimer">Results are AI-generated hypotheses. Verify before acting. Error ID: {{ error_id }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab">
+                <h3 class="tab-title">Exception</h3>
+                <div class="tab-content">
+                    <div class="trace trace-as-html" id="trace-box-1">
+                        <div class="trace-details">
+                            <div class="trace-head">
+                                <h3 class="trace-class">{{ exception_class }}</h3>
+                                <p class="break-long-words trace-message">{{ exception_message }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        "use strict";
+        var hasClass = function(el, cssClass) { return el.classList.contains(cssClass); };
+        var addClass = function(el, cssClass) { el.classList.add(cssClass); };
+        var removeClass = function(el, cssClass) { el.classList.remove(cssClass); };
+        var tabGroups = document.querySelectorAll('.sf-tabs[data-processed="false"]');
+        for (var i = 0; i < tabGroups.length; i++) {
+            var tabs = tabGroups[i].querySelectorAll(':scope > .tab');
+            var tabNavigation = document.createElement('div');
+            tabNavigation.className = 'tab-navigation';
+            tabNavigation.setAttribute('role', 'tablist');
+            var selectedTabId = 'tab-' + i + '-0';
+            for (var j = 0; j < tabs.length; j++) {
+                var tabId = 'tab-' + i + '-' + j;
+                var tabTitle = tabs[j].querySelector('.tab-title').innerHTML;
+                var btn = document.createElement('button');
+                addClass(btn, 'tab-control');
+                btn.setAttribute('data-tab-id', tabId);
+                btn.setAttribute('role', 'tab');
+                btn.innerHTML = tabTitle;
+                if (hasClass(tabs[j], 'active')) selectedTabId = tabId;
+                tabNavigation.appendChild(btn);
+                var tabContent = tabs[j].querySelector('.tab-content');
+                tabContent.parentElement.setAttribute('id', tabId);
+            }
+            tabGroups[i].insertBefore(tabNavigation, tabGroups[i].firstChild);
+            addClass(document.querySelector('[data-tab-id="' + selectedTabId + '"]'), 'active');
+        }
+        for (i = 0; i < tabGroups.length; i++) {
+            var controls = tabGroups[i].querySelectorAll('.tab-navigation .tab-control');
+            for (var j = 0; j < controls.length; j++) {
+                var tabId = controls[j].getAttribute('data-tab-id');
+                var panel = document.getElementById(tabId);
+                panel.querySelector('.tab-title').className = 'hidden';
+                if (hasClass(controls[j], 'active')) {
+                    panel.className = 'block';
+                } else {
+                    panel.className = 'hidden';
+                }
+                controls[j].addEventListener('click', function(e) {
+                    var activeTab = e.target;
+                    while (activeTab && activeTab.tagName.toLowerCase() !== 'button') activeTab = activeTab.parentNode;
+                    if (!activeTab) return;
+                    var nav = activeTab.parentNode.children;
+                    for (var k = 0; k < nav.length; k++) {
+                        var id = nav[k].getAttribute('data-tab-id');
+                        document.getElementById(id).className = 'hidden';
+                        removeClass(nav[k], 'active');
+                    }
+                    addClass(activeTab, 'active');
+                    document.getElementById(activeTab.getAttribute('data-tab-id')).className = 'block';
+                });
+            }
+            tabGroups[i].setAttribute('data-processed', 'true');
+        }
+    })();
+    </script>
 </body>
 </html>

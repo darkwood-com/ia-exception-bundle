@@ -79,6 +79,21 @@ final class IaExceptionSubscriber implements EventSubscriberInterface
         }
     }
 
+    private function getStatusText(int $statusCode): string
+    {
+        return match ($statusCode) {
+            400 => 'Bad Request',
+            401 => 'Unauthorized',
+            403 => 'Forbidden',
+            404 => 'Not Found',
+            405 => 'Method Not Allowed',
+            500 => 'Internal Server Error',
+            502 => 'Bad Gateway',
+            503 => 'Service Unavailable',
+            default => 'Error',
+        };
+    }
+
     private function resolveStatusCode(\Throwable $throwable, Request $request): int
     {
         if (class_exists(\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface::class)
@@ -133,6 +148,7 @@ final class IaExceptionSubscriber implements EventSubscriberInterface
             'exception_class' => $throwable::class,
             'exception_message' => $throwable->getMessage(),
             'status_code' => $statusCode,
+            'status_text' => $this->getStatusText($statusCode),
         ]);
 
         return new Response($content, $statusCode, [
