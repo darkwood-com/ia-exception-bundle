@@ -1,0 +1,18 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    Darkwood\IaExceptionBundle\Service\ExceptionAiAnalyzer:
+        arguments:
+            $cacheTtl: '%darkwood_ia_exception.cache_ttl%'
+            $timeoutMs: '%darkwood_ia_exception.timeout_ms%'
+            $includeTrace: '%darkwood_ia_exception.include_trace%'
+
+    Darkwood\IaExceptionBundle\EventSubscriber\IaExceptionSubscriber:
+        arguments:
+            $enabled: '%darkwood_ia_exception.enabled%'
+            $onlyStatusCodes: '%darkwood_ia_exception.only_status_codes%'
+            $errorIdGenerator: '%darkwood_ia_exception.error_id_generator%'
+        tags:
+            - { name: kernel.event_subscriber }

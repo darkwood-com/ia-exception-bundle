@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error {{ status_code }} — AI Analysis</title>
+    <style>
+        :root {
+            --bg: #1a1a2e;
+            --surface: #16213e;
+            --accent: #0f3460;
+            --text: #eaeaea;
+            --muted: #a0a0a0;
+            --success: #4ade80;
+            --warning: #fbbf24;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--warning);
+            margin: 0 0 0.5rem;
+        }
+        .error-id {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+        }
+        .section {
+            background: var(--surface);
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+        .english-exception {
+            font-size: 0.95rem;
+        }
+        ul {
+            margin: 0.25rem 0 0;
+            padding-left: 1.25rem;
+        }
+        li {
+            margin-bottom: 0.25rem;
+        }
+        .confidence {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            background: var(--accent);
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        .disclaimer {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Error {{ status_code }}</h1>
+        <p class="error-id">Error ID: {{ error_id }}</p>
+
+        <div class="section">
+            <div class="section-title">AI Analysis (hypotheses, not guarantees)</div>
+            <div class="english-exception">{{ analysis.englishException }}</div>
+            <span class="confidence">Confidence: {{ (analysis.confidence * 100)|round }}%</span>
+        </div>
+
+        {% if analysis.probableCauses is not empty %}
+        <div class="section">
+            <div class="section-title">Probable causes</div>
+            <ul>
+                {% for cause in analysis.probableCauses %}
+                <li>{{ cause }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if analysis.suggestedFixes is not empty %}
+        <div class="section">
+            <div class="section-title">Suggested next steps</div>
+            <ul>
+                {% for fix in analysis.suggestedFixes %}
+                <li>{{ fix }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="section">
+            <div class="section-title">Exception</div>
+            <code>{{ exception_class }}</code>: {{ exception_message }}
+        </div>
+
+        <p class="disclaimer">
+            Results are AI-generated hypotheses. Verify before acting. Never include secrets in exception context.
+        </p>
+    </div>
+</body>
+</html>
