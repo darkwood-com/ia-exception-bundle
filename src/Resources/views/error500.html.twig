@@ -38,7 +38,19 @@
             <div class="container">
                 <h1 class="break-long-words exception-message{% if exception_message|length > 180 %} long{% endif %}">{{ exception_message }}</h1>
                 <div class="exception-illustration hidden-xs-down">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="rgba(255,255,255,0.8)" width="111" height="66" viewBox="0 0 16 16"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="rgba(255,255,255,0.8)" width="111" height="66" viewBox="0 0 22 16" aria-hidden="true">
+                        <g transform="translate(0 0)">
+                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                        </g>
+                        <g transform="translate(0 0) scale(0.9)" stroke="rgba(255,255,255,0.8)" stroke-width="0.25" stroke-linecap="round">
+                            <rect x="0" y="0.6" width="5" height="4.2" rx="0.5"/>
+                            <circle fill="var(--background-error)" cx="1.5" cy="2.2" r="0.35"/>
+                            <circle fill="var(--background-error)" cx="3.5" cy="2.2" r="0.35"/>
+                            <path stroke="var(--background-error)" d="M1.2 3.8h2.6" fill="none" stroke-width="0.3"/>
+                            <line x1="2.5" y1="0.6" x2="2.5" y2="0.15" stroke-width="0.25"/>
+                            <circle cx="2.5" cy="0" r="0.2"/>
+                        </g>
+                    </svg>
                 </div>
             </div>
         </div>
