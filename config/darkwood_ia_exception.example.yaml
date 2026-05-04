@@ -1,0 +1,34 @@
+# Example configuration for darkwood/ia-exception-bundle
+# Copy to config/packages/darkwood_ia_exception.yaml and adjust
+
+darkwood_ia_exception:
+    # Enable AI analysis (opt-in; recommended for dev/staging only)
+    enabled: true
+
+    # When true: exception page returns immediately with "AI analysis loading…";
+    # analysis is fetched asynchronously via GET /__ai_exception/{error_id}
+    async: false
+
+    # URL path for async endpoint (only used when async: true)
+    async_route_prefix: '__ai_exception'
+
+    # Seconds to keep exception context in cache for async analysis (min 60)
+    async_context_ttl: 300
+
+    # HTTP status codes to augment with AI (default: 500)
+    only_status_codes: [500]
+
+    # Symfony AI agent service ID (from symfony/ai-bundle)
+    agent: 'ai.agent.default'
+
+    # Timeout in ms before fallback (configure AI platform http_client for enforcement)
+    timeout_ms: 800
+
+    # Cache TTL in seconds (0 = disabled)
+    cache_ttl: 600
+
+    # PSR-6 cache service
+    cache: 'cache.app'
+
+    # Include stack trace in AI input (dev only; never in production)
+    include_trace: false

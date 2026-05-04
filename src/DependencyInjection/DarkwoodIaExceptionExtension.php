@@ -1,0 +1,52 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Darkwood\IaExceptionBundle\DependencyInjection;
+
+use Darkwood\IaExceptionBundle\Service\ExceptionAiAnalyzer;
+use Darkwood\IaExceptionBundle\Service\ExceptionContextStore;
+use Darkwood\IaExceptionBundle\Service\TraceFormatter;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
+
+final class DarkwoodIaExceptionExtension extends Extension
+{
+    public function load(array $configs, ContainerBuilder $container): void
+    {
+        $loader = new YamlFileLoader(
+            $container,
+            new FileLocator(__DIR__ . '/../Resources/config')
+        );
+        $loader->load('services.yaml');
+
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
+        $container->setParameter('darkwood_ia_exception.enabled', $config['enabled']);
+        $container->setParameter('darkwood_ia_exception.only_status_codes', $config['only_status_codes']);
+        $container->setParameter('darkwood_ia_exception.timeout_ms', $config['timeout_ms']);
+        $container->setParameter('darkwood_ia_exception.cache_ttl', $config['cache_ttl']);
+        $container->setParameter('darkwood_ia_exception.cache', $config['cache']);
+        $container->setParameter('darkwood_ia_exception.include_trace', $config['include_trace']);
+        $container->setParameter('darkwood_ia_exception.error_id_generator', $config['error_id_generator']);
+        $container->setParameter('darkwood_ia_exception.async', $config['async']);
+        $container->setParameter('darkwood_ia_exception.async_route_prefix', trim($config['async_route_prefix'], '/'));
+        $container->setParameter('darkwood_ia_exception.async_context_ttl', $config['async_context_ttl']);
+
+        $analyzerDef = $container->getDefinition(ExceptionAiAnalyzer::class);
+        $analyzerDef->setArgument('$agent', new Reference($config['agent']));
+        $analyzerDef->setArgument('$cache', new Reference($config['cache']));
+
+        $contextStoreDef = $container->getDefinition(ExceptionContextStore::class);
+        $contextStoreDef->setArgument('$cache', new Reference($config['cache']));
+
+        if ($container->has('debug.file_link_formatter')) {
+            $container->getDefinition(TraceFormatter::class)
+                ->setArgument('$fileLinkFormat', new Reference('debug.file_link_formatter'));
+        }
+    }
+}
