@@ -6,8 +6,8 @@ Augments HTTP 500 errors with AI-based exception analysis using [Symfony AI](htt
 
 ## Requirements
 
-- PHP 8.2+
-- Symfony 6.4+, 7.x or 8.x
+- PHP 8.5+
+- Symfony 8.x
 - [symfony/ai-bundle](https://packagist.org/packages/symfony/ai-bundle) (with a configured platform and agent)
 
 ## Installation

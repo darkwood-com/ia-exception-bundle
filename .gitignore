@@ -1,1 +1,4 @@
 /vendor/
+/tools/**/vendor/
+/tools/**/.php-cs-fixer.cache
+/tools/**/.phpunit.cache

@@ -1,0 +1,16 @@
+{
+    "require-dev": {
+        "phpunit/phpunit": "^13.0",
+        "symfony/phpunit-bridge": "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Darkwood\\IaExceptionBundle\\": "../../src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Darkwood\\IaExceptionBundle\\Tests\\": "../../tests"
+        }
+    }
+}
