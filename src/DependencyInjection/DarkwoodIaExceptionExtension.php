@@ -46,7 +46,8 @@ final class DarkwoodIaExceptionExtension extends Extension
 
         if ($container->has('debug.file_link_formatter')) {
             $container->getDefinition(TraceFormatter::class)
-                ->setArgument('$fileLinkFormat', new Reference('debug.file_link_formatter'));
+                ->setArgument('$fileLinkFormat', new Reference('debug.file_link_formatter'))
+            ;
         }
     }
 }

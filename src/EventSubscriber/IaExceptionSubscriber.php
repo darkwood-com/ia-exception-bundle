@@ -15,8 +15,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Throwable;
 use Twig\Environment;
+
+use function in_array;
 
 /**
  * Listens to KernelEvents::EXCEPTION and augments 500 errors with AI analysis when enabled.
@@ -35,8 +39,7 @@ final class IaExceptionSubscriber implements EventSubscriberInterface
         private readonly ?string $errorIdGenerator = null,
         private readonly bool $async = false,
         private readonly string $asyncRoutePrefix = '__ai_exception',
-    ) {
-    }
+    ) {}
 
     public static function getSubscribedEvents(): array
     {
@@ -56,7 +59,7 @@ final class IaExceptionSubscriber implements EventSubscriberInterface
 
         // Resolve HTTP status – use flatten exception when available
         $statusCode = $this->resolveStatusCode($throwable, $request);
-        if (!\in_array($statusCode, $this->onlyStatusCodes, true)) {
+        if (!in_array($statusCode, $this->onlyStatusCodes, true)) {
             return;
         }
 
@@ -69,17 +72,19 @@ final class IaExceptionSubscriber implements EventSubscriberInterface
                 $this->contextStore->store($errorId, ExceptionContext::fromThrowable($throwable));
                 $response = $this->createHtmlResponse(null, $errorId, $statusCode, $throwable);
                 $event->setResponse($response);
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 // Fallback: do not set response
             }
+
             return;
         }
 
         // Sync mode (or JSON): compute AI analysis before responding
         $analysis = null;
+
         try {
             $analysis = $this->analyzer->analyze($throwable);
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return;
         }
 
@@ -94,7 +99,7 @@ final class IaExceptionSubscriber implements EventSubscriberInterface
                 $response = $this->createHtmlResponse($analysis, $errorId, $statusCode, $throwable);
             }
             $event->setResponse($response);
-        } catch (\Throwable) {
+        } catch (Throwable) {
             // Fallback: do not set response
         }
     }
@@ -114,10 +119,10 @@ final class IaExceptionSubscriber implements EventSubscriberInterface
         };
     }
 
-    private function resolveStatusCode(\Throwable $throwable, Request $request): int
+    private function resolveStatusCode(Throwable $throwable, Request $request): int
     {
-        if (class_exists(\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface::class)
-            && $throwable instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
+        if (class_exists(HttpExceptionInterface::class)
+            && $throwable instanceof HttpExceptionInterface) {
             return $throwable->getStatusCode();
         }
 
@@ -127,6 +132,7 @@ final class IaExceptionSubscriber implements EventSubscriberInterface
     private function wantsJson(Request $request): bool
     {
         $accept = $request->headers->get('Accept', '');
+
         return str_contains($accept, 'application/json');
     }
 
@@ -135,6 +141,7 @@ final class IaExceptionSubscriber implements EventSubscriberInterface
         if ($this->errorIdGenerator !== null && $request->attributes->has('_controller')) {
             // Custom generator would be injected as a callable – for MVP we use a simple ID
         }
+
         return bin2hex(random_bytes(8));
     }
 
@@ -157,13 +164,13 @@ final class IaExceptionSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param ExceptionAiAnalysis|null $analysis Null when async: show placeholder and load via UX.
+     * @param null|ExceptionAiAnalysis $analysis null when async: show placeholder and load via UX
      */
     private function createHtmlResponse(
         ?ExceptionAiAnalysis $analysis,
         string $errorId,
         int $statusCode,
-        \Throwable $throwable
+        Throwable $throwable
     ): Response {
         $flatten = FlattenException::createFromThrowable($throwable);
         $exceptions = $this->traceFormatter->format($flatten);

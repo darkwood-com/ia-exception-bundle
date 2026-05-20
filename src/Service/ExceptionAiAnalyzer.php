@@ -10,6 +10,11 @@ use Psr\Cache\CacheItemPoolInterface;
 use Symfony\AI\Agent\AgentInterface;
 use Symfony\AI\Platform\Message\Message;
 use Symfony\AI\Platform\Message\MessageBag;
+use Throwable;
+
+use function array_slice;
+use function is_array;
+use function is_string;
 
 /**
  * Analyzes exceptions via Symfony AI Agent. All failures fallback silently.
@@ -37,13 +42,12 @@ PROMPT;
         private readonly int $cacheTtl,
         private readonly int $timeoutMs,
         private readonly bool $includeTrace,
-    ) {
-    }
+    ) {}
 
     /**
      * Returns AI analysis or null on any failure (timeout, parse error, etc).
      */
-    public function analyze(\Throwable $exception): ?ExceptionAiAnalysis
+    public function analyze(Throwable $exception): ?ExceptionAiAnalysis
     {
         $fingerprint = $this->buildFingerprint($exception);
 
@@ -51,13 +55,14 @@ PROMPT;
             $cached = $this->cache->getItem($fingerprint);
             if ($cached->isHit()) {
                 $data = $cached->get();
+
                 return $this->hydrate($data);
             }
         }
 
         try {
             $analysis = $this->callAgent($exception);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return null;
         }
 
@@ -82,13 +87,14 @@ PROMPT;
             $cached = $this->cache->getItem($fingerprint);
             if ($cached->isHit()) {
                 $data = $cached->get();
+
                 return $this->hydrate($data);
             }
         }
 
         try {
             $analysis = $this->callAgentWithUserContent($this->buildUserContentFromContext($context));
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return null;
         }
 
@@ -102,7 +108,7 @@ PROMPT;
         return $analysis;
     }
 
-    private function buildFingerprint(\Throwable $exception): string
+    private function buildFingerprint(Throwable $exception): string
     {
         $parts = [
             $exception::class,
@@ -133,15 +139,15 @@ PROMPT;
         return 'darkwood_ia_exception_' . hash('xxh128', implode("\0", $parts));
     }
 
-    private function callAgent(\Throwable $exception): ?ExceptionAiAnalysis
+    private function callAgent(Throwable $exception): ?ExceptionAiAnalysis
     {
         $userContent = $this->buildUserContent($exception);
+
         return $this->callAgentWithUserContent($userContent);
     }
 
     private function callAgentWithUserContent(string $userContent): ?ExceptionAiAnalysis
     {
-
         $messages = new MessageBag(
             Message::forSystem(self::SYSTEM_PROMPT),
             Message::ofUser($userContent)
@@ -151,13 +157,13 @@ PROMPT;
         $result = $this->agent->call($messages);
 
         $content = $result->getContent();
-        if (!\is_string($content) || trim($content) === '') {
+        if (!is_string($content) || trim($content) === '') {
             return null;
         }
 
         $content = $this->extractJson($content);
         $data = json_decode($content, true);
-        if (!\is_array($data)) {
+        if (!is_array($data)) {
             return null;
         }
 
@@ -181,7 +187,7 @@ PROMPT;
         return implode("\n", $parts);
     }
 
-    private function buildUserContent(\Throwable $exception): string
+    private function buildUserContent(Throwable $exception): string
     {
         $parts = [
             'Exception: ' . $exception::class,
@@ -205,6 +211,7 @@ PROMPT;
             $content = preg_replace('/^```\w*\s*/', '', $content);
             $content = preg_replace('/\s*```\s*$/', '', $content);
         }
+
         return trim($content);
     }
 
@@ -219,19 +226,19 @@ PROMPT;
         $confidence = isset($data['confidence']) ? (float) $data['confidence'] : 0.0;
         $safeLogSummary = $data['safe_log_summary'] ?? '';
 
-        if (!\is_string($englishException) || $englishException === '') {
+        if (!is_string($englishException) || $englishException === '') {
             return null;
         }
-        if (!\is_array($probableCauses)) {
+        if (!is_array($probableCauses)) {
             $probableCauses = [];
         }
         $probableCauses = array_values(array_filter(array_map('strval', $probableCauses)));
-        if (!\is_array($suggestedFixes)) {
+        if (!is_array($suggestedFixes)) {
             $suggestedFixes = [];
         }
         $suggestedFixes = array_values(array_filter(array_map('strval', $suggestedFixes)));
         $confidence = max(0, min(1, $confidence));
-        if (!\is_string($safeLogSummary)) {
+        if (!is_string($safeLogSummary)) {
             $safeLogSummary = '';
         }
 

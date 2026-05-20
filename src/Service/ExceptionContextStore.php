@@ -7,6 +7,8 @@ namespace Darkwood\IaExceptionBundle\Service;
 use Darkwood\IaExceptionBundle\Model\ExceptionContext;
 use Psr\Cache\CacheItemPoolInterface;
 
+use function is_array;
+
 /**
  * Stores and retrieves exception context in cache for async AI analysis (keyed by error_id).
  */
@@ -17,8 +19,7 @@ final class ExceptionContextStore
     public function __construct(
         private readonly CacheItemPoolInterface $cache,
         private readonly int $ttlSeconds,
-    ) {
-    }
+    ) {}
 
     public function store(string $errorId, ExceptionContext $context): void
     {
@@ -35,9 +36,10 @@ final class ExceptionContextStore
             return null;
         }
         $data = $item->get();
-        if (!\is_array($data)) {
+        if (!is_array($data)) {
             return null;
         }
+
         return ExceptionContext::fromArray($data);
     }
 }

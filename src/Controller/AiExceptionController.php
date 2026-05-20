@@ -21,8 +21,7 @@ final class AiExceptionController
         private readonly ExceptionAiAnalyzer $analyzer,
         private readonly Environment $twig,
         private readonly bool $enabled,
-    ) {
-    }
+    ) {}
 
     public function __invoke(Request $request, string $error_id): Response
     {
@@ -38,6 +37,7 @@ final class AiExceptionController
         $analysis = $this->analyzer->analyzeFromContext($context);
         if ($analysis === null) {
             $html = $this->renderFallbackHtml($error_id);
+
             return new Response($html, Response::HTTP_OK, [
                 'Content-Type' => 'text/html; charset=UTF-8',
             ]);
@@ -49,6 +49,7 @@ final class AiExceptionController
                 'analysis' => $analysis,
                 'error_id' => $error_id,
             ]);
+
             return new Response($html, Response::HTTP_OK, [
                 'Content-Type' => 'text/html; charset=UTF-8',
             ]);

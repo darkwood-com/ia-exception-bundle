@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Darkwood\IaExceptionBundle\Model;
 
+use Throwable;
+
 /**
  * Serializable exception context for async AI analysis (stored in cache keyed by error_id).
  */
@@ -15,8 +17,7 @@ final readonly class ExceptionContext
         public string $file,
         public int $line,
         public string $trace,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{class: string, message: string, file: string, line: int, trace: string}
@@ -46,7 +47,7 @@ final readonly class ExceptionContext
         );
     }
 
-    public static function fromThrowable(\Throwable $throwable): self
+    public static function fromThrowable(Throwable $throwable): self
     {
         return new self(
             class: $throwable::class,

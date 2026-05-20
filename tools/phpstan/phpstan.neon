@@ -2,6 +2,7 @@ parameters:
     level: 3
     bootstrapFiles:
         - ../../vendor/autoload.php
+        - ../phpunit/vendor/autoload.php
     paths:
         - ../../src
         - ../../tests

@@ -17,8 +17,7 @@ final readonly class ExceptionAiAnalysis
         public array $suggestedFixes,
         public float $confidence,
         public string $safeLogSummary,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>

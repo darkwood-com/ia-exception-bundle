@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Darkwood\IaExceptionBundle\Routing;
 
 use Darkwood\IaExceptionBundle\Controller\AiExceptionController;
+use RuntimeException;
 use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -23,7 +24,7 @@ final class RouteLoader extends Loader
     public function load(mixed $resource, ?string $type = null): RouteCollection
     {
         if ($this->loaded) {
-            throw new \RuntimeException('Do not add the "darkwood_ia_exception_async" loader twice.');
+            throw new RuntimeException('Do not add the "darkwood_ia_exception_async" loader twice.');
         }
         $this->loaded = true;
 

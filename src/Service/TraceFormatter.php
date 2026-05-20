@@ -6,6 +6,12 @@ namespace Darkwood\IaExceptionBundle\Service;
 
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
 
+use function count;
+use function is_array;
+use function is_int;
+use function is_string;
+use function strlen;
+
 /**
  * Formats exception traces for display in Symfony-style HTML.
  */
@@ -13,11 +19,10 @@ final class TraceFormatter
 {
     public function __construct(
         private readonly ?object $fileLinkFormat = null,
-    ) {
-    }
+    ) {}
 
     /**
-     * @return array<int, array{class: string, message: string, trace: array<int, array{method_call: string, file: ?string, line: ?int, file_link: string|false, code_excerpt: string, is_vendor: bool, style: string}>}>
+     * @return array<int, array{class: string, message: string, trace: array<int, array{method_call: string, file: ?string, line: ?int, file_link: false|string, code_excerpt: string, is_vendor: bool, style: string}>}>
      */
     public function format(FlattenException $exception): array
     {
@@ -74,7 +79,8 @@ final class TraceFormatter
         }
         $args = isset($frame['args']) ? $this->formatArgsAsText($frame['args']) : '';
         $raw = $class . $type . $function . '(' . $args . ')';
-        return htmlspecialchars($raw, \ENT_COMPAT | \ENT_SUBSTITUTE, 'UTF-8');
+
+        return htmlspecialchars($raw, ENT_COMPAT | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     /**
@@ -84,22 +90,24 @@ final class TraceFormatter
     {
         $parts = [];
         foreach ($args as $key => $item) {
-            if (!\is_array($item) || !isset($item[0], $item[1])) {
+            if (!is_array($item) || !isset($item[0], $item[1])) {
                 $parts[] = '…';
+
                 continue;
             }
             [$type, $value] = $item;
             $formatted = match ($type) {
-                'object' => 'object(' . (\is_string($value) ? $value : '?') . ')',
-                'array' => 'array(' . (\is_array($value) ? $this->formatArgsAsText($value) : (string) $value) . ')',
+                'object' => 'object(' . (is_string($value) ? $value : '?') . ')',
+                'array' => 'array(' . (is_array($value) ? $this->formatArgsAsText($value) : (string) $value) . ')',
                 'null' => 'null',
                 'boolean' => var_export($value, true),
                 'integer', 'float' => (string) $value,
                 'string' => "'" . addslashes(substr((string) $value, 0, 50)) . (strlen((string) $value) > 50 ? '…' : '') . "'",
                 default => '…',
             };
-            $parts[] = \is_int($key) ? $formatted : "'" . $key . "' => " . $formatted;
+            $parts[] = is_int($key) ? $formatted : "'" . $key . "' => " . $formatted;
         }
+
         return implode(', ', $parts);
     }
 
@@ -114,13 +122,14 @@ final class TraceFormatter
         }
         $lines = explode("\n", $content);
         $start = max($line - $context, 1);
-        $end = min($line + $context, \count($lines));
+        $end = min($line + $context, count($lines));
         $out = [];
         for ($i = $start; $i <= $end; $i++) {
-            $escaped = htmlspecialchars($lines[$i - 1] ?? '', \ENT_COMPAT | \ENT_SUBSTITUTE, 'UTF-8');
+            $escaped = htmlspecialchars($lines[$i - 1] ?? '', ENT_COMPAT | ENT_SUBSTITUTE, 'UTF-8');
             $selected = $i === $line ? ' class="selected"' : '';
             $out[] = '<li' . $selected . '><code>' . $escaped . '</code></li>';
         }
+
         return '<ol start="' . $start . '">' . implode("\n", $out) . '</ol>';
     }
 }

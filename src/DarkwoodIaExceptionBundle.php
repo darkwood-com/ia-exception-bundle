@@ -6,6 +6,4 @@ namespace Darkwood\IaExceptionBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-final class DarkwoodIaExceptionBundle extends Bundle
-{
-}
+final class DarkwoodIaExceptionBundle extends Bundle {}
