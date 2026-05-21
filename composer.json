@@ -1,5 +1,6 @@
 {
     "name": "darkwood/ia-exception-bundle",
+    "version": "1.3.0",
     "description": "Augments HTTP 500 errors with AI-based exception analysis using Symfony AI",
     "type": "symfony-bundle",
     "license": "MIT",
