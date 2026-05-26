@@ -1,0 +1,4 @@
+# Async AI exception endpoint (only registered when async is enabled)
+_darkwood_ia_exception_async:
+    resource: .
+    type: darkwood_ia_exception_async

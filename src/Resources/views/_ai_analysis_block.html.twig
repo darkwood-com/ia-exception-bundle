@@ -1,0 +1,20 @@
+<div class="ai-analysis-section">
+    <p class="break-long-words"><strong>{{ analysis.englishException }}</strong></p>
+    {% if analysis.probableCauses is not empty %}
+    <p><strong>Probable causes:</strong></p>
+    <ul>
+        {% for cause in analysis.probableCauses %}
+        <li>{{ cause }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if analysis.suggestedFixes is not empty %}
+    <p><strong>Suggested next steps:</strong></p>
+    <ul>
+        {% for fix in analysis.suggestedFixes %}
+        <li>{{ fix }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <p class="ai-disclaimer">Results are AI-generated hypotheses. Verify before acting. Error ID: {{ error_id }}</p>
+</div>
