@@ -30,7 +30,7 @@
         }
     },
     "scripts": {
-        "test": "tools/phpunit/vendor/bin/phpunit --configuration=tools/phpunit/phpunit.xml",
+        "test": "tools/phpunit/vendor/bin/phpunit --configuration=tools/phpunit/phpunit.dist.xml",
         "php-cs-fixer": [
             "composer install -d tools/php-cs-fixer",
             "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --config tools/php-cs-fixer/.php-cs-fixer.php --dry-run --diff"
@@ -41,7 +41,7 @@
         ],
         "phpunit": [
             "composer install -d tools/phpunit",
-            "tools/phpunit/vendor/bin/phpunit --configuration=tools/phpunit/phpunit.xml"
+            "tools/phpunit/vendor/bin/phpunit --configuration=tools/phpunit/phpunit.dist.xml"
         ]
     },
     "conflict": {

@@ -13,7 +13,7 @@ use function Castor\run;
 function phpunit(): int
 {
     return run(
-        [__DIR__ . '/vendor/bin/phpunit', '--configuration=' . __DIR__ . '/phpunit.xml'],
+        [__DIR__ . '/vendor/bin/phpunit', '--configuration=' . __DIR__ . '/phpunit.dist.xml'],
         context()->withAllowFailure(),
     )->getExitCode();
 }
