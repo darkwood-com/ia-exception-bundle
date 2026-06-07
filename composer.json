@@ -7,15 +7,15 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.5",
-        "symfony/config": "^8.0",
-        "symfony/dependency-injection": "^8.0",
-        "symfony/error-handler": "^8.0",
-        "symfony/http-kernel": "^8.0",
-        "symfony/twig-bundle": "^8.0",
-        "symfony/cache": "^8.0",
-        "symfony/ai-bundle": "^0.8",
-        "symfony/ai-agent": "^0.8",
-        "symfony/ai-platform": "^0.8"
+        "symfony/config": "^8.1",
+        "symfony/dependency-injection": "^8.1",
+        "symfony/error-handler": "^8.1",
+        "symfony/http-kernel": "^8.1",
+        "symfony/twig-bundle": "^8.1",
+        "symfony/cache": "^8.1",
+        "symfony/ai-bundle": "^0.9.0",
+        "symfony/ai-agent": "^^0.9.0",
+        "symfony/ai-platform": "^0.9.0"
     },
     "require-dev": {
     },
@@ -50,7 +50,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "^8.0"
+            "require": "^8.1"
         }
     }
 }
