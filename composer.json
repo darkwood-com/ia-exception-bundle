@@ -13,9 +13,9 @@
         "symfony/http-kernel": "^8.1",
         "symfony/twig-bundle": "^8.1",
         "symfony/cache": "^8.1",
-        "symfony/ai-bundle": "^0.10.0",
-        "symfony/ai-agent": "^0.10.0",
-        "symfony/ai-platform": "^0.10.0"
+        "symfony/ai-bundle": "^0.12.0",
+        "symfony/ai-agent": "^0.12.0",
+        "symfony/ai-platform": "^0.12.0"
     },
     "require-dev": {
     },

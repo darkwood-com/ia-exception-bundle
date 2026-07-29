@@ -3,6 +3,12 @@
 Versions from **1.3.0** onward follow the unified Darkwood release line
 (see [CHANGELOG-8.1.md](../../../../CHANGELOG-8.1.md) at the monorepo root).
 
+## 8.1.2
+
+- Update to Symfony 8.1.2
+- Upgrade Symfony AI (`symfony/ai-bundle`, `symfony/ai-agent`, `symfony/ai-platform`) to `^0.12.0`
+- Upgrade QA tooling (PHP CS Fixer, Rector, PHPStan, PHPUnit)
+
 ## 8.1.1
 
 - Update to Symfony 8.1.1
