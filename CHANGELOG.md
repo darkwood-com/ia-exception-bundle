@@ -3,6 +3,10 @@
 Versions from **1.3.0** onward follow the unified Darkwood release line
 (see [CHANGELOG-8.1.md](../../../../CHANGELOG-8.1.md) at the monorepo root).
 
+## 8.1.5
+
+- Update to Symfony 8.1.5
+
 ## 8.1.3
 
 - Update to Symfony 8.1.3
