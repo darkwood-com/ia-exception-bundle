@@ -43,24 +43,7 @@
             "composer install -d tools/phpunit",
             "tools/phpunit/vendor/bin/phpunit --configuration=tools/phpunit/phpunit.dist.xml"
         ],
-        "symfony-lsp": "symfony lsp:check",
-        "auto-scripts": {
-            "cache:clear": "symfony-cmd",
-            "assets:install %PUBLIC_DIR%": "symfony-cmd"
-        },
-        "post-install-cmd": [
-            "@auto-scripts"
-        ],
-        "post-update-cmd": [
-            "@auto-scripts"
-        ]
-    },
-    "config": {
-        "allow-plugins": {
-            "symfony/flex": true,
-            "symfony/runtime": true
-        },
-        "sort-packages": true
+        "symfony-lsp": "symfony lsp:check"
     },
     "conflict": {
         "symfony/symfony": "*"
